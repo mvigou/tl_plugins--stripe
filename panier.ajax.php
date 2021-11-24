@@ -73,8 +73,21 @@ switch(@$_GET['mode'])
             $response = array(
 				'qte'=> qtePanierSession()
 			);
-            echo json_encode($response);
+			
+			echo json_encode($response);
+			
 		}
+		else{
+			$response = array(
+				'qte' => 0,
+				'err' => 'id absent'
+			);	
+
+			
+			echo json_encode($response);
+
+		}
+		
 
 	break;
 
@@ -115,6 +128,114 @@ switch(@$_GET['mode'])
 		echo json_encode($response);
 
     break;
+
+	case "payer":
+
+		$total = doubleval(str_replace(',','.',$_POST['total'])) * 100;
+
+		$key = 'sk_test_51JmViFLd2kB48DFM1ACN5UWMoDFlbOiTz78sG0AjXkr5ead7WxLuo52QjLRpkK6Rp8tVtJXNrMyBMybSMrOhH18q00YhztPImQ';
+		
+		require('stripe/init.php');
+		\Stripe\Stripe::setApiKey($key);
+
+		header('Content-Type: application/json');
+
+		// détail commande
+		$line_items = array();
+		foreach($_SESSION['panier'] as $key => $elem_panier) {
+			array_push( 
+				$line_items,
+				[
+					[	
+						'price_data' => [
+							'currency' => 'eur',
+							'unit_amount' => (double)str_replace(',','.',$elem_panier['pu']) * 100,
+							'product_data' => [
+								'name' => $elem_panier['title'],
+								'images' => [
+									$GLOBALS['scheme'].$GLOBALS['domain'].$elem_panier['visuel']
+								],
+							]
+						],
+						'quantity' => (double)$elem_panier['qte'],
+					]
+				]
+			);
+
+		}
+
+		// options de livraison
+
+		// on récupère les options dans la base pour eviter les injections
+		$sel_content = $connect->query("SELECT ".$GLOBALS['tc'].".* FROM ".$GLOBALS['tc']." WHERE url = '".@$_GET['permalink']."'");
+		$res_content = json_decode($sel_content->fetch_assoc()['content'], true);
+
+		$module = module('livraison',$res_content);
+		
+		$shipping_options = array();
+		foreach($module as $key => $option) {
+			if($key > 0) {
+				array_push (
+					$shipping_options,
+					[
+						'shipping_rate_data' => [	
+							'type' => 'fixed_amount',
+							'fixed_amount' => [	
+								'amount' => (double)str_replace(',','.',$option['montant']) * 100,
+								'currency' => 'eur'
+							],
+							'display_name' => strip_tags($option['libelle']),
+							'delivery_estimate' => [
+								'minimum' => ['unit' => 'business_day','value' => $option['minimum']],
+								'maximum' => ['unit' => 'business_day','value' => $option['maximum']],
+							]
+						]
+					]
+				);
+			}
+		}
+
+	
+		/*
+		"billing_details": {
+		"address": {
+		"city": null,
+		"country": null,
+		"line1": null,
+		"line2": null,
+		"postal_code": null,
+		"state": null
+		},
+		"email": null,
+		"name": null,
+		"phone": null
+		*/
+
+		$checkout_session = \Stripe\Checkout\Session::create(
+		[
+			// livraison
+			'shipping_address_collection' => [
+				'allowed_countries' => ['FR'],
+			  ],
+			  'shipping_options' => [$shipping_options],
+
+			//liste des éléments 
+			'line_items' => $line_items,
+			'mode' => 'payment',
+			'success_url' => $GLOBALS['home']."panier/succes/id_{CHECKOUT_SESSION_ID}",
+			'cancel_url' => $GLOBALS['home']."panier/annulation/id_{CHECKOUT_SESSION_ID}",
+			/*'metadata' => [
+			   
+			]*/
+		]);
+		//header("HTTP/1.1 303 See Other");
+		//header("Location: " . $checkout_session->url);
+
+		?>
+		<script>document.location.href="<?=$checkout_session->url?>"</script>
+		<?
+
+	break;
 
 }
 
