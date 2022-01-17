@@ -6,7 +6,9 @@ if(@$_GET['mode']) {
     include_once("../../api/db.php");// Connexion à la db
 }
 
-
+// CLE STRIPE
+//$key = 'sk_test_51JmViFLd2kB48DFM1ACN5UWMoDFlbOiTz78sG0AjXkr5ead7WxLuo52QjLRpkK6Rp8tVtJXNrMyBMybSMrOhH18q00YhztPImQ';
+		
 //------------------------
 // MODE APPEL XHR
 switch(@$_GET['mode'])
@@ -129,11 +131,13 @@ switch(@$_GET['mode'])
 
     break;
 
+	// PAYER SA COMMANDE
 	case "payer":
 
 		$total = doubleval(str_replace(',','.',$_POST['total'])) * 100;
 
-		$key = 'sk_test_51JmViFLd2kB48DFM1ACN5UWMoDFlbOiTz78sG0AjXkr5ead7WxLuo52QjLRpkK6Rp8tVtJXNrMyBMybSMrOhH18q00YhztPImQ';
+		// initialisation de la session stripe
+		//$key = 'sk_test_51JmViFLd2kB48DFM1ACN5UWMoDFlbOiTz78sG0AjXkr5ead7WxLuo52QjLRpkK6Rp8tVtJXNrMyBMybSMrOhH18q00YhztPImQ';
 		
 		require('stripe/init.php');
 		\Stripe\Stripe::setApiKey($key);
@@ -211,29 +215,52 @@ switch(@$_GET['mode'])
 		"phone": null
 		*/
 
-		$checkout_session = \Stripe\Checkout\Session::create(
-		[
-			// livraison
-			'shipping_address_collection' => [
-				'allowed_countries' => ['FR'],
-			  ],
-			  'shipping_options' => [$shipping_options],
+		if(!@$_SESSION['checkout_session_id']) {
 
-			//liste des éléments 
-			'line_items' => $line_items,
-			'mode' => 'payment',
-			'success_url' => $GLOBALS['home']."panier/succes/id_{CHECKOUT_SESSION_ID}",
-			'cancel_url' => $GLOBALS['home']."panier/annulation/id_{CHECKOUT_SESSION_ID}",
-			/*'metadata' => [
-			   
-			]*/
-		]);
+			$checkout_session = \Stripe\Checkout\Session::create(
+				[
+					// livraison
+					'shipping_address_collection' => [
+						'allowed_countries' => ['FR'],
+					  ],
+					  'shipping_options' => [$shipping_options],
+		
+					//liste des éléments 
+					'line_items' => $line_items,
+					'mode' => 'payment',
+					'success_url' => $GLOBALS['home']."panier/succes/{CHECKOUT_SESSION_ID}",
+					'cancel_url' => $GLOBALS['home']."panier/annulation/{CHECKOUT_SESSION_ID}",
+					//'metadata' => []
+				]);
+
+		}
+		else {
+
+			// il faut eviter de réécrire l'url car on perd la casse !
+			$checkout_session = \Stripe\Checkout\Session::retrieve(
+				$_SESSION['checkout_session_id']
+			);
+
+		}
+
+
+		
 		//header("HTTP/1.1 303 See Other");
 		//header("Location: " . $checkout_session->url);
 
 		?>
 		<script>document.location.href="<?=$checkout_session->url?>"</script>
 		<?
+
+	break;
+
+	// LISTE DES SESSIONS STRIPE
+	case "envoi-facture":
+
+		print 'envoi facture mail';
+		/*require('stripe/init.php');
+		\Stripe\Stripe::setApiKey($key);*/
+
 
 	break;
 
