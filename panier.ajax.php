@@ -6,9 +6,6 @@ if(@$_GET['mode']) {
     include_once("../../api/db.php");// Connexion à la db
 }
 
-// CLE STRIPE
-//$key = 'sk_test_51JmViFLd2kB48DFM1ACN5UWMoDFlbOiTz78sG0AjXkr5ead7WxLuo52QjLRpkK6Rp8tVtJXNrMyBMybSMrOhH18q00YhztPImQ';
-		
 //------------------------
 // MODE APPEL XHR
 switch(@$_GET['mode'])
@@ -136,13 +133,11 @@ switch(@$_GET['mode'])
 
 		$total = doubleval(str_replace(',','.',$_POST['total'])) * 100;
 
-		// initialisation de la session stripe
-		//$key = 'sk_test_51JmViFLd2kB48DFM1ACN5UWMoDFlbOiTz78sG0AjXkr5ead7WxLuo52QjLRpkK6Rp8tVtJXNrMyBMybSMrOhH18q00YhztPImQ';
-		
+		// initialisation de la session stripe (cf. panier.config.php pour clé)
 		require('stripe/init.php');
 		\Stripe\Stripe::setApiKey($key);
 
-		header('Content-Type: application/json');
+		//header('Content-Type: application/json');
 
 		// détail commande
 		$line_items = array();
@@ -150,25 +145,30 @@ switch(@$_GET['mode'])
 			array_push( 
 				$line_items,
 				[
-					[	
-						'price_data' => [
-							'currency' => 'eur',
-							'unit_amount' => (double)str_replace(',','.',$elem_panier['pu']) * 100,
-							'product_data' => [
-								'name' => $elem_panier['title'],
-								'images' => [
-									$GLOBALS['scheme'].$GLOBALS['domain'].$elem_panier['visuel']
-								],
-							]
-						],
-						'quantity' => (double)$elem_panier['qte'],
-					]
+					'price_data' => [
+						'currency' => 'eur',
+						'unit_amount' => (double)str_replace(',','.',$elem_panier['pu']) * 100,
+						'product_data' => [
+							'name' => $elem_panier['title'],
+							'images' => [
+								$GLOBALS['scheme'].$GLOBALS['domain'].$elem_panier['visuel']
+							],
+						]
+					],
+					'quantity' => (double)$elem_panier['qte'],
+					/*'adjustable_quantity' => [
+						'enabled' => true,
+						'minimum' => 0,
+						'maximum' => 10,
+					]*/
 				]
 			);
 
 		}
 
-		// options de livraison
+		//DEBUG
+		//var_dump($line_items);
+		//exit;
 
 		// on récupère les options dans la base pour eviter les injections
 		$sel_content = $connect->query("SELECT ".$GLOBALS['tc'].".* FROM ".$GLOBALS['tc']." WHERE url = '".@$_GET['permalink']."'");
@@ -199,54 +199,28 @@ switch(@$_GET['mode'])
 			}
 		}
 
+		
+		// creation de la session de formation
+		$checkout_session = \Stripe\Checkout\Session::create(
+			[
+				// livraison
+				'shipping_address_collection' => [
+					'allowed_countries' => ['FR'],
+				  ],
+				  'shipping_options' => [$shipping_options],
 	
-		/*
-		"billing_details": {
-		"address": {
-		"city": null,
-		"country": null,
-		"line1": null,
-		"line2": null,
-		"postal_code": null,
-		"state": null
-		},
-		"email": null,
-		"name": null,
-		"phone": null
-		*/
+				//liste des éléments 
+				'line_items' => $line_items,
+				'mode' => 'payment',
+				'success_url' => $GLOBALS['home']."panier/succes",
+				'cancel_url' => $GLOBALS['home']."panier/annulation",
+				//'metadata' => []
+			]
+		);
 
-		if(!@$_SESSION['checkout_session_id']) {
+		// sauvegarde de l'id en variable de session pour reprise
+		$_SESSION['checkout_session']['id'] =  $checkout_session->id;
 
-			$checkout_session = \Stripe\Checkout\Session::create(
-				[
-					// livraison
-					'shipping_address_collection' => [
-						'allowed_countries' => ['FR'],
-					  ],
-					  'shipping_options' => [$shipping_options],
-		
-					//liste des éléments 
-					'line_items' => $line_items,
-					'mode' => 'payment',
-					'success_url' => $GLOBALS['home']."panier/succes/{CHECKOUT_SESSION_ID}",
-					'cancel_url' => $GLOBALS['home']."panier/annulation/{CHECKOUT_SESSION_ID}",
-					//'metadata' => []
-				]);
-
-		}
-		else {
-
-			// il faut eviter de réécrire l'url car on perd la casse !
-			$checkout_session = \Stripe\Checkout\Session::retrieve(
-				$_SESSION['checkout_session_id']
-			);
-
-		}
-
-
-		
-		//header("HTTP/1.1 303 See Other");
-		//header("Location: " . $checkout_session->url);
 
 		?>
 		<script>document.location.href="<?=$checkout_session->url?>"</script>

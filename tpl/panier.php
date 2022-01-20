@@ -8,7 +8,7 @@ switch(@array_keys($GLOBALS['filter'])[0]) {
 
    default : //AFFICHAGE PANIER
 
-      // panier vide
+      // si le panier est vide on echappe le traitement
       if(!isset($_SESSION['panier']) || count($_SESSION['panier']) == 0) {
       ?>
          
@@ -19,12 +19,33 @@ switch(@array_keys($GLOBALS['filter'])[0]) {
          </section>
                
       <?php
-         exit;
-         }
+      exit;
+      }
+
+      // on annule la session ouverte précédement
+      if(@array_keys($GLOBALS['filter'])[0] == 'annulation' && @$_SESSION['checkout_session']['id']) 
+      {
+
+         require_once('theme/stripe/stripe/init.php');
+		   \Stripe\Stripe::setApiKey($key);
+
+         $retrieve_session = \Stripe\Checkout\Session::Retrieve(
+            $_SESSION['checkout_session']['id']
+         );
+
+         $retrieve_session->expire();
+
+         unset($_SESSION['checkout_session']['id']);
+
+
+      }
             
       // sauvegarde de l'id de la session en cas de retour sur la page
-      if(@array_keys($GLOBALS['filter'])[0] == 'annulation' && @$GLOBALS['filter']['id'])
-         $_SESSION['checkout_session_id'] = str_replace('-','_',$GLOBALS['filter']['id']);
+      //if(@array_keys($GLOBALS['filter'])[0] == 'annulation' && @$GLOBALS['filter']['id'])
+      //   $_SESSION['checkout_session_id'] = str_replace('-','_',$GLOBALS['filter']['id']);
+         
+      //unset($_SESSION['checkout_session']);
+
 
       // affichage de la commande
       ?>
@@ -235,8 +256,29 @@ switch(@array_keys($GLOBALS['filter'])[0]) {
    break;
 
    case 'succes':
-      $_SESSION['checkout_session_id'] = str_replace('-','_',$GLOBALS['filter']['id']);
+      //on vide le panier en session
+      unset($_SESSION['panier']);
 
+      require_once('theme/stripe/stripe/init.php');
+		\Stripe\Stripe::setApiKey($key);
+
+      $retrieve_session = \Stripe\Checkout\Session::retrieve(
+         $_SESSION['checkout_session']['id'],
+         []
+      );
+
+      /*
+      email : $retrieve_session->customer_details->email
+      nom: $retrieve_session->shipping->name
+      adresse : 
+         $retrieve_session->shipping->address->line_1
+         $retrieve_session->shipping->address->line_2
+         $retrieve_session->shipping->address->postal_code
+         $retrieve_session->shipping->address->city
+
+      */
+
+      var_dump($retrieve_session->shipping->address);
       ?>
 
       <section class="mw960p mod center mtm mbl">
@@ -246,6 +288,9 @@ switch(@array_keys($GLOBALS['filter'])[0]) {
       </section>
 
       <?
+
+      //suppression des variable de session
+      //unset($_SESSION['chekout_session']);
 
    break;
 
