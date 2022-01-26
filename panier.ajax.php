@@ -1,13 +1,6 @@
 <?php
-
-if(@$_GET['mode']) {
-    include_once("../../config.php");// Variables
-    include_once("../../api/function.php");// Fonctions
-    include_once("../../api/db.php");// Connexion à la db
-}
-
 //------------------------
-// MODE APPEL XHR
+// MODE APPEL
 switch(@$_GET['mode'])
 {
 	default:	
@@ -15,6 +8,10 @@ switch(@$_GET['mode'])
 
     // INSTALLATION BDD
     case 'installer':
+
+		include_once("../../config.php");// Variables
+		include_once("../../api/function.php");// Fonctions
+		include_once("../../api/db.php");// Connexion à la db
 
 		$GLOBALS['connect']->query(
 			"CREATE TABLE IF NOT EXISTS `".$GLOBALS['db_prefix']."panier` (
@@ -36,6 +33,10 @@ switch(@$_GET['mode'])
 
     // AJOUT AU PANIER
 	case "ajouter": 
+
+		include_once("../../config.php");// Variables
+		include_once("../../api/function.php");// Fonctions
+		include_once("../../api/db.php");// Connexion à la db
 
 		if(@$_GET['id']) {
 
@@ -93,6 +94,10 @@ switch(@$_GET['mode'])
     // MISE A JOUR DU PANIER
     case "modifier":
 
+		include_once("../../config.php");// Variables
+		include_once("../../api/function.php");// Fonctions
+		include_once("../../api/db.php");// Connexion à la db
+
         if(@$_GET['id']) {
 
             header("Content-Type: application/json");
@@ -113,6 +118,10 @@ switch(@$_GET['mode'])
     // SUPPRESSION D'UN PRODUIT
     case "supprimer":
 
+		include_once("../../config.php");// Variables
+		include_once("../../api/function.php");// Fonctions
+		include_once("../../api/db.php");// Connexion à la db
+
         $elem_pos = array_search($_GET['id'],array_column($_SESSION['panier'], 'id'));
        
 		unset($_SESSION['panier'][$elem_pos]);
@@ -130,6 +139,10 @@ switch(@$_GET['mode'])
 
 	// PAYER SA COMMANDE
 	case "payer":
+
+		include_once("../../config.php");// Variables
+		include_once("../../api/function.php");// Fonctions
+		include_once("../../api/db.php");// Connexion à la db
 
 		$total = doubleval(str_replace(',','.',$_POST['total'])) * 100;
 
