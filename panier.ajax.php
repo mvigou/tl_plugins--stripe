@@ -1,11 +1,5 @@
 <?php
 
-if(@$_GET['mode']) {
-    include_once("../../config.php");// Variables
-    include_once("../../api/function.php");// Fonctions
-    include_once("../../api/db.php");// Connexion à la db
-}
-
 //------------------------
 // MODE APPEL XHR
 switch(@$_GET['mode'])
@@ -13,29 +7,79 @@ switch(@$_GET['mode'])
 	default:	
 	break;
 
-    // INSTALLATION BDD
-    case 'installer':
+	case "liste-produits" :
+		require('stripe/init.php');
+		\Stripe\Stripe::setApiKey($key);
 
-		$GLOBALS['connect']->query(
-			"CREATE TABLE IF NOT EXISTS `".$GLOBALS['db_prefix']."panier` (
-				`id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-				`statut` varchar(20) NOT NULL DEFAULT 'panier', 
-				`contenu` text,
-				`port` text,
-				`coordonees` text,
-				`date_insert` datetime NOT NULL,
-				`date_update` datetime DEFAULT NULL,
-				`historique` text NOT NULL,
-				PRIMARY KEY (`id`),
-				KEY `statut` (`statut`)
-			) 
-			ENGINE=MyISAM DEFAULT CHARSET=utf8;"
+		$produits = \Stripe\Product::all();
 
-		);
-    break;
+		//var_dump($produits->data);
+
+		?>
+		<ul class="unstyled pan grid">
+			<?
+			foreach($produits->data as $key => $produit) 
+			{
+				$prix = \Stripe\Price::all(['product' => $produit->id]);
+
+				$_SESSION[encode($produit->id)] = $produit->id; // sauvegarde de l'id encodé pour récupération du produit
+			?>
+			<li>
+
+				<article>
+
+					<a href="produit/<?=encode($produit->id)?>" title="">
+						<img src="" alt="">
+						<h2 class="mts mbs"><?=$produit->name?></h2>
+						<h3 class="mtn mbs"><?=$prix->data[0]->unit_amount_decimal / 100?> €</h3>
+					</a>
+
+					<button class="bt acheter" title="Ajouter au panier" data-id="<?=$produit->id?>">Ajouter au panier</button>
+
+				</article>
+
+			</li>
+			<?
+			}
+			?>
+		</ul>
+		<?
+	break;
+
+	case "fiche-produit":
+		require('stripe/init.php');
+		\Stripe\Stripe::setApiKey($key);
+
+		if(!@$_SESSION[array_keys($GLOBALS['filter'])[0]]) {
+
+			print 'produit inconnu/revenir à la liste des produits';
+			exit;
+		}
+
+		$id = $_SESSION[array_keys($GLOBALS['filter'])[0]];
+
+		$produit = \Stripe\Product::retrieve($id);
+
+		?>
+		<article>
+
+			<h1><?=$produit->name?></h1>
+			<p><?=$produit->description?></p>
+
+			<button class="bt acheter" title="Ajouter au panier" data-id="<?=$produit->id?>">Ajouter au panier</button>
+
+		</article>
+		<?
+
+	break;
 
     // AJOUT AU PANIER
+	// @TODO : revoir la structure du panier pour etre à l'image de stripe (evitera des boucles par la suite)
 	case "ajouter": 
+		
+		include_once("../../config.php");// Variables
+		include_once("../../api/function.php");// Fonctions
+		include_once("../../api/db.php");// Connexion à la db
 
 		if(@$_GET['id']) {
 
@@ -93,6 +137,10 @@ switch(@$_GET['mode'])
     // MISE A JOUR DU PANIER
     case "modifier":
 
+		include_once("../../config.php");// Variables
+		include_once("../../api/function.php");// Fonctions
+		include_once("../../api/db.php");// Connexion à la db
+
         if(@$_GET['id']) {
 
             header("Content-Type: application/json");
@@ -112,6 +160,10 @@ switch(@$_GET['mode'])
 
     // SUPPRESSION D'UN PRODUIT
     case "supprimer":
+		
+		include_once("../../config.php");// Variables
+		include_once("../../api/function.php");// Fonctions
+		include_once("../../api/db.php");// Connexion à la db
 
         $elem_pos = array_search($_GET['id'],array_column($_SESSION['panier'], 'id'));
        
@@ -130,6 +182,10 @@ switch(@$_GET['mode'])
 
 	// PAYER SA COMMANDE
 	case "payer":
+		
+		include_once("../../config.php");// Variables
+		include_once("../../api/function.php");// Fonctions
+		include_once("../../api/db.php");// Connexion à la db
 
 		$total = doubleval(str_replace(',','.',$_POST['total'])) * 100;
 
@@ -230,6 +286,10 @@ switch(@$_GET['mode'])
 
 	// LISTE DES SESSIONS STRIPE
 	case "envoi-facture":
+		
+		/*include_once("../../config.php");// Variables
+		include_once("../../api/function.php");// Fonctions
+		include_once("../../api/db.php");// Connexion à la db*/
 
 		print 'envoi facture mail';
 		/*require('stripe/init.php');

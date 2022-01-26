@@ -1,17 +1,19 @@
 <?php
 
+// CLE STRIPE
+$key = 'sk_test_51JmViFLd2kB48DFM1ACN5UWMoDFlbOiTz78sG0AjXkr5ead7WxLuo52QjLRpkK6Rp8tVtJXNrMyBMybSMrOhH18q00YhztPImQ';
+
 // filtres
 $GLOBALS['filter_auth'] = array_merge(
     $GLOBALS['filter_auth'],
     [
+        'produit',
         'panier',
         'succes',
         'annulation'
     ]
 );
 
-// CLE STRIPE
-$key = 'sk_test_51JmViFLd2kB48DFM1ACN5UWMoDFlbOiTz78sG0AjXkr5ead7WxLuo52QjLRpkK6Rp8tVtJXNrMyBMybSMrOhH18q00YhztPImQ';
 
 ?>
 
