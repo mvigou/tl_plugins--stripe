@@ -51,14 +51,15 @@ h2, h3 {
 }
 
 /* liste des produits */
-.liste-produits {
-}
 .liste-produits .liste-produits--entete {
 	border-bottom: 2px solid #333;
 }
 
 .liste-produits .liste-produits--details {
 	border-bottom: 1px solid #333;
+}
+.liste-produits .liste-produits--details:hover {
+	background-color: #eee;
 }
 
 /* tableau de produit */
@@ -80,23 +81,30 @@ h2, h3 {
 
 /* bouton pour les liens */
 .bt, .bt.internal {
-	background-color: #fff;
-	color: #78cfd6;
+	background-color: #333;
+	color: #fff;
 
-	border: 1px solid #78cfd6;
-	border-radius: 0.5em;
+	border: 2px solid #333;
+	border-radius: 0;
 }
 	.bt:hover {
-		background-color: #78cfd6;
-		color: #fff;
+		background-color: #fff;
+		color: #333;
 	}
 
 button.acheter {
+	text-transform: lowercase;
+	font-variant: small-caps;
 	background-color: #333;
 	color: #fff;
 	border-radius: 0;
 	padding: .3rem .7rem;
-	border: 1px solid transparent;
+	border: 2px solid #333;
+}
+
+button.acheter:hover {
+	color: #333 !important;
+	background-color: #fff !important;
 }
 
 /* breakpoint */
@@ -696,19 +704,16 @@ input[type="reset"].unstyled:focus {
 	z-index: 999;
 
 	width: auto;
-	left: 20px;/* right */
-	bottom: 20px;
+	left: 15px;/* right */
+	bottom: 15px;
 
 	margin: 0;
 	padding: 0.2rem 1rem;
 
-	border-radius: 30px;
-
-	opacity: 0.6;
 	text-shadow: none;
 }
 	.bt.fixed.top { 	
-		right: 20px;
+		right: 15px;
 		left: inherit;
 	}
 	.bt.edit, .bt.add, .bt.top { 
@@ -716,9 +721,8 @@ input[type="reset"].unstyled:focus {
 		padding: 0.5rem;
 	}
 	.bt.fixed.edit { 	
-		transition: right .1s;	
-		opacity: 0.2;
-		left: 20px;
+		transition: right .1s;
+		left: 15px;
 		right: initial;
 	}
 	.bt.fixed.add { 
@@ -729,10 +733,8 @@ input[type="reset"].unstyled:focus {
 	.bt.fixed.construction { 		
 		left: 70px;/*10px*/
 		right: initial;
-		opacity: 0.6;
 		display: block;		
 		padding-left: 0.5rem;
-		border-radius: 8px;
 	}
 	.bt.fixed:hover { 		
 		opacity: 1 !important;	
