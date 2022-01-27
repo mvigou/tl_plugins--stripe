@@ -1,13 +1,15 @@
 a {
-	color: #35747f;
+	color: blue;
 	text-decoration: none;
 	transition: color .3s;
 }
-	a:hover { color: #78cfd6; }
+	a:hover { text-decoration: underline; }
+
+	a[target="_blank"]:after {content:'➝'; display: inline-block; transform:rotate(-45deg);}
 
 
 h1 {
-	color: #78cfd6;
+	color: #333;
 	text-transform: uppercase;
 	font-weight: lighter;
 	font-size: 2em;
@@ -15,7 +17,7 @@ h1 {
 }
 
 h2, h3 {
-	color: #35747f;
+	color: #333;
 	font-weight: lighter;
 }
 
@@ -48,6 +50,17 @@ h2, h3 {
 	display: none;
 }
 
+/* liste des produits */
+.liste-produits {
+}
+.liste-produits .liste-produits--entete {
+	border-bottom: 2px solid #333;
+}
+
+.liste-produits .liste-produits--details {
+	border-bottom: 1px solid #333;
+}
+
 /* tableau de produit */
 [data-devise]::after {
 	content: ' 'attr(data-devise);
@@ -78,10 +91,36 @@ h2, h3 {
 		color: #fff;
 	}
 
+button.acheter {
+	background-color: #333;
+	color: #fff;
+	border-radius: 0;
+	padding: .3rem .7rem;
+	border: 1px solid transparent;
+}
+
+/* breakpoint */
+@media (min-width: 576px) {
+	.sm\:hidden {display: none;}
+	.sm\:tr {display: table-row;}
+}
+@media (min-width: 992px) {
+	.md\:hidden {display: none;}
+	.md\:tr {display: table-row;}
+	
+}
+@media (min-width: 1330px) {
+	.lg\:hidden {display: none;}
+	.lg\:tr {display: table-row;}
+	
+}
+
 
 /* Couleur */
-.color, .selected { color: #78cfd6; }
+.color { color: #78cfd6; }
 .color-alt { color: #35747f; }
+
+a.selected {text-decoration: underline;}
 
 .bg-color {
 	background-color: #78cfd6;
@@ -91,10 +130,6 @@ h2, h3 {
 		background-color: #fff;
 		color: #78cfd6;
 	}
-
-
-/* Header */
-header { box-shadow: 0px 10px 9px -9px rgba(153,156,153,0.37); }
 
 
 /* Formulaire contact */
@@ -122,7 +157,7 @@ body {
 	color: #000;
 	font-family: Helvetica, Arial, sans-serif;
 	line-height: 1.5;
-	font-size: 1.4rem;
+	font-size: 1.6rem;
 }
 
 
@@ -151,7 +186,7 @@ a {
 }
 
 a:active, a:hover, a:focus { 
-	outline: 0;/* Problème d'accessibilité ? 06/01/2021 */
+	/*outline: 0;/* Problème d'accessibilité ? 06/01/2021 */
 	/* color: #000; */
 }
 
@@ -216,7 +251,6 @@ button, input, optgroup, select, textarea {
 	color: inherit;
 	font: inherit;
 	margin: 0;
-	outline: none;
 }
 	input:focus, textarea:focus { border: 1px solid #000; }
 	
@@ -297,12 +331,12 @@ p, .p-like, ul, ol, dl, blockquote, pre, td, th, label, textarea, caption, detai
 	line-height: 1.5;
 }
 
-h1, .h1-like { font-size: 3.2rem; }
-h2, .h2-like { font-size: 2.8rem; }
-h3, .h3-like { font-size: 2.4rem; }
-h4, .h4-like { font-size: 2rem; }
-h5, .h5-like { font-size: 1.8rem; }
-h6, .h6-like { font-size: 1.6rem; }
+h1, .h1, .h1-like { font-size: 3.2rem; }
+h2, .h2, .h2-like { font-size: 2.8rem; }
+h3, .h3, .h3-like { font-size: 2.4rem; }
+h4, .h4, .h4-like { font-size: 2rem; }
+h5, .h5, .h5-like { font-size: 1.8rem; }
+h6, .h6, .h6-like { font-size: 1.6rem; }
 
 em, .italic, address, cite, i, var { font-style: italic; }
 
@@ -868,6 +902,14 @@ s,m,l,n = small, medium, large, none
 .mls { margin-left: 1rem; }
 .mlm { margin-left: 2rem; }
 .mll { margin-left: 4rem; }
+.mxt { margin-left: .5rem; margin-right: .5rem;}
+.mxs { margin-left: 1rem; margin-right: 1rem;}
+.mxm { margin-left: 2rem; margin-right: 2rem;}
+.mxl { margin-left: 4rem; margin-right: 4rem;}
+.myt { margin-top: .5rem; margin-bottom: .5rem;}
+.mys { margin-top: 1rem; margin-bottom: 1rem;}
+.mym { margin-top: 2rem; margin-bottom: 2rem;}
+.myl { margin-top: 4rem; margin-bottom: 4rem;}
 
 .pan { padding: 0; }
 .pat { padding: 0.5rem; }
@@ -894,6 +936,14 @@ s,m,l,n = small, medium, large, none
 .pls { padding-left: 1rem; }
 .plm { padding-left: 2rem; }
 .pll { padding-left: 4rem; }
+.pxt { padding-left: .5rem; padding-right: .5rem;}
+.pxs { padding-left: 1rem; padding-right: 1rem;}
+.pxm { padding-left: 2rem; padding-right: 2rem;}
+.pxl { padding-left: 4rem; padding-right: 4rem;}
+.pyt { padding-top: .5rem; padding-bottom: .5rem;}
+.pys { padding-top: 1rem; padding-bottom: 1rem;}
+.pym { padding-top: 2rem; padding-bottom: 2rem;}
+.pyl { padding-top: 4rem; padding-bottom: 4rem;}
 
 
 /* Contenu éditable */
@@ -998,6 +1048,13 @@ div.editable {
 
 
 /* HEADER */
+
+header .acces-rapide { 
+	position: absolute;
+	top: -100px;
+}
+	header .acces-rapide:focus { top: 0; }
+
 header #logo { transition: opacity .5s; }
 	header #logo:hover { opacity: 0.6; }
 
@@ -1016,68 +1073,6 @@ header #logo { transition: opacity .5s; }
 		header nav a { text-decoration: none; }
 
 
-	/* BOUTON BURGER & Animation */
-	header nav .burger {
-		display: none;
-		position: absolute;
-		overflow: hidden;
-		float: right;
-		top: 10px;
-		right: 0;
-		margin: 0 1rem;
-		padding: 0;
-		width: 30px;
-		height: 30px;
-		font-size: 0;
-		text-indent: -9999px;
-		appearance: none;
-		box-shadow: none;
-		border-radius: 3px;
-		border: none;
-		cursor: pointer;
-		transition: background 0.3s;
-
-		background-color: #35747f;
-	}
-	.burger span {
-		display: block;
-		position: absolute;
-		top: 14px;
-		left: 6px;
-		right: 6px;
-		height: 2px;
-		background: white;
-
-		transition: background 0.3s;
-	}
-
-	.burger span::before,
-	.burger span::after {
-		position: absolute;
-		display: block;
-		left: 0;
-		width: 100%;
-		height: 2px;
-		background-color: #fff;
-		content: "";
-
-		transition-duration: 0.3s, 0.3s;
-		transition-delay: 0.3s, 0s;
-	}
-
-	.burger span::before { top: -6px; transition-property: top, transform; }
-	.burger span::after { bottom: -6px; transition-property: bottom, transform; }
-
-	/* active state, i.e. menu open */
-	.burger.active { background-color: #cb0032; }
-	.burger.active span { background: none; }
-	.burger.active span::before { top: 0; transform: rotate(45deg);	}
-	.burger.active span::after { bottom: 0; transform: rotate(-45deg); }
-	.burger.active span::before,
-	.burger.active span::after { transition-delay: 0s, 0.3s; }
-
-
-
 /* HIDING content */
 @media (max-width: 640px) {
 	.no-small-screen, .noss { display: none !important; }
@@ -1092,69 +1087,6 @@ header #logo { transition: opacity .5s; }
 /* RESPONSIVE big */
 @media (max-width: 850px)
 {
-	header nav .burger {
-		display: block;
-	    z-index: 12;
-	}
-
-	header nav > ul {
-		background-color: #fff;
-
-		display: block !important;
-
-		position: fixed !important;
-
-		left: 0;
-		top: 0;
-		bottom: 0;
-
-		overflow-y: auto;
-		-webkit-overflow-scrolling: touch;
-
-		width: 300px;
-
-		margin: 0;
-		padding-top: 0.5rem;
-
-		z-index: 10;
-
-		text-align: center;
-
-		transition-duration: 0.3s;
-		transform: translateX(-100%);
-		-webkit-transform: translateX(-100%);
-	}
-		header nav li {
-			float: none;
-			padding: 0;
-			margin-left: 0 !important;
-			border-radius: 5px;
-			transition: background 0.3s;
-		}
-			header nav li:hover { background-color: #dfdfdf; }
-			header nav li a {
-				display: block;
-				padding: 0.5rem;
-			}
-
-	/* Raz du header */
-	.responsive-nav header { position: inherit; }
-	/* Ouvertur du menu */
-	.responsive-nav header nav ul {
-		transform: translateX(0);
-		-webkit-transform: translateX(0);
-	}
-	/* Overlay menu */
-	.responsive-nav .responsive-overlay {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background-color: rgba(0, 0, 0, 0.6);
-	}
-	/* Fixe le burger*/
-	.responsive-nav .burger { position: fixed; }
 
 	/* mode edition : menu d'ajout invisible */
 	.dragger { display: none !important; }

@@ -1,18 +1,19 @@
 <?php if(!$GLOBALS['domain']) exit;?>
 
+<header class="clearfix mbm">
 
-<header>
-	<section class="mw960p mod center tc relative">
-		<div class="center ptm"><a href="<?=$GLOBALS['home']?>"><?php media('logo', '150')?></a></div>  <!--anciennement logo à 320-->
-	</section>
+	<section class="relative">
 
-	<section class="mw960p mod center tc relative">
-		
-		<nav class="mtm mbm">
+		<nav aria-label="<?php _e("Quick access")?>"><a href="#main" class="acces-rapide">Aller au contenu</a></nav>
 
-			<a class="big burger"><span>menu</span></a>
+		<article class="inbl ptm pxm">
+			<p class="big"><?span('description','h1')?></p>
+			<aside class="small"><?span('en-savoir-plus')?></aside>
+		</article>
 
-			<ul class="grid up">
+		<nav class="mtm mbm mxs" aria-label="<?php _e("Browsing menu")?>">
+
+			<ul>
 				<?php
 				// Extraction du menu
 				foreach($GLOBALS['nav'] as $cle => $val)
@@ -23,25 +24,27 @@
 					else
 						$selected = "";
 
-					echo"<li><a href=\"".make_url($val['href'], 
-					array("domaine" => true))."\"".($val['id']?" id='".$val['id']."'":"")."".($val['target']?" target='".$val['target']."'":"")." class='".$selected."'>".$val['text']."</a></li>";
+					echo"<li><a href=\"".make_url($val['href'], array("domaine" => true))."\"".($val['id']?" id='".$val['id']."'":"")."".($val['target']?" target='".$val['target']."'":"")." class='".$selected."'>".$val['text']."</a></li>";
 				}
 				?>
 			</ul>
 
 		</nav>
-		
-		<div id="nav-panier">
-			<? 
-				//on calcule le volume du panier 
-				$id_elem = @array_column($_SESSION['panier'], 'qte');
-				$quantite = @array_sum($id_elem);
-			?>
-			<a href="<?=$GLOBALS['home']?>panier">	
-				<i id="mon-panier" title="mon panier" class="fa fa-basket" data-quantite="<?if(@$quantite) echo $quantite; else echo '0';?>"></i>
-			</a>
-		</div>
-		
+
+	</section>
+
+	<section id="nav-panier" class="mxs">
+
+		<? 
+			//on calcule le volume du panier 
+			$id_elem = @array_column($_SESSION['panier'], 'qte');
+			$quantite = @array_sum($id_elem);
+		?>
+		<a href="<?=$GLOBALS['home']?>panier" class="inbl tc">	
+			<i id="mon-panier" title="mon panier" class="fa fa-basket" data-quantite="<?if(@$quantite) echo $quantite; else echo '0';?>" aria-hidden="true"></i>
+			<div>Mon panier</div>
+		</a>
+
 	</section>
 
 </header>
