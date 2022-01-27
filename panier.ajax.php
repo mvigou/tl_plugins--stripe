@@ -11,39 +11,44 @@ switch(@$_GET['mode'])
 		require('stripe/init.php');
 		\Stripe\Stripe::setApiKey($key);
 
-		$produits = \Stripe\Product::all();
+		// liste des produits actif (non archivés)
+		$produits = \Stripe\Product::all(['active' => true]);
 
-		//var_dump($produits->data);
+		//@todo: vérifier que le produit n'est pas archivé et à bien un tarif !
+		foreach($produits->data as $key => $produit) 
+		{
+			$prix = \Stripe\Price::all(['product' => $produit->id]);
 
-		?>
-		<ul class="unstyled pan grid">
-			<?
-			foreach($produits->data as $key => $produit) 
-			{
-				$prix = \Stripe\Price::all(['product' => $produit->id]);
+			// si un prix est associé au produit, on affiche le produit
+			if(count($prix->data) > 0) {
 
 				$_SESSION[encode($produit->id)] = $produit->id; // sauvegarde de l'id encodé pour récupération du produit
-			?>
-			<li>
 
-				<article>
+				?>
 
-					<a href="produit/<?=encode($produit->id)?>" title="">
-						<img src="" alt="">
-						<h2 class="mts mbs"><?=$produit->name?></h2>
-						<h3 class="mtn mbs"><?=$prix->data[0]->unit_amount_decimal / 100?> €</h3>
-					</a>
+					<tr class="liste-produits--details">
+						<td class="pys pxs">
+							<h2 class="big mts mbs">
+								<a href="produit/<?=encode($produit->id)?>"><?=$produit->name?></a>
+							</h2>
+						</td>
 
-					<button class="bt acheter" title="Ajouter au panier" data-id="<?=$produit->id?>">Ajouter au panier</button>
+						<td class="pys pxs">
+						</td>
 
-				</article>
+						<td class="pys pxs">
+							<?=@$prix->data[0]->unit_amount_decimal / 100?> €
+						</td>
 
-			</li>
-			<?
+						<td class="pys pxs w250p tr">
+							<button class="bt acheter" title="Ajouter au panier" data-id="<?=$produit->id?>">Ajouter au panier</button>
+						</td>
+
+					</tr>
+				
+				<?
 			}
-			?>
-		</ul>
-		<?
+		}
 	break;
 
 	case "fiche-produit":
