@@ -23,43 +23,14 @@ h2, h3 {
 
 
 /*-- PANIER --*/
-/* icone du panier */
-#mon-panier {
-	position: relative;
-	width: 50px;
-}
-#mon-panier.fa-basket::before{
-	font-size: 2em;
-}
-#mon-panier::after {
-	content: attr(data-quantite);
-	display: block;
-	font-family: monospace;
-	font-size: .9em;
-	color: #fff;
-	min-width: 10px;
-	border-radius: 20px;
-	padding: .3rem .4rem;
-	background: #CC0000;
-	position: absolute;
-	top: 0;
-	right: 0;
-}
-
-#mon-panier[data-quantite="0"]::after{
-	display: none;
-}
+.panier {}
+	.panier .panier--quantite::before{
+		content: '('attr(data-quantite)')';
+		display: block;
+		width: auto;
+	}
 
 /* liste des produits */
-.liste-produits {
-}
-.liste-produits .liste-produits--entete {
-	border-bottom: 2px solid #333;
-}
-
-.liste-produits .liste-produits--details {
-	border-bottom: 1px solid #333;
-}
 
 /* tableau de produit */
 [data-devise]::after {

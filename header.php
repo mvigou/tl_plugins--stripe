@@ -33,19 +33,5 @@
 
 	</section>
 
-	<section id="nav-panier" class="mxs">
-
-		<? 
-			//on calcule le volume du panier 
-			$id_elem = @array_column($_SESSION['panier'], 'qte');
-			$quantite = @array_sum($id_elem);
-		?>
-		<a href="<?=$GLOBALS['home']?>panier" class="inbl tc">	
-			<i id="mon-panier" title="mon panier" class="fa fa-basket" data-quantite="<?if(@$quantite) echo $quantite; else echo '0';?>" aria-hidden="true"></i>
-			<div>Mon panier</div>
-		</a>
-
-	</section>
-
 </header>
  
